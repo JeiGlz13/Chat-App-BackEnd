@@ -36,6 +36,20 @@ app.use(bodyParser.json());
 
 app.use('/api', messageRouter);
 
+// Socket io
+io.on('connection', (socket) => {
+    console.log(socket.id);
+
+    socket.on('message', (message, nickname, createdAt) => {
+        // Envio al resto de clientes
+        socket.broadcast.emit('message', {
+            body: message,
+            from: nickname,
+            createdAt,
+        });
+    })
+})
+
 // Connection DB and listenn port
 mongoose.connect(url, { useNewUrlParser: true })
     .then(() => {
